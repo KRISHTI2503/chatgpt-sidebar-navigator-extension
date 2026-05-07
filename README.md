@@ -16,7 +16,7 @@ When you have a long ChatGPT conversation, finding a specific prompt means scrol
 - Extracts and lists all user prompts with sequential numbering (1 → N)
 - Click any sidebar item to smooth-scroll to that message
 - Active prompt auto-highlights as you scroll (IntersectionObserver)
-- Dark and light theme support — syncs with ChatGPT's own theme
+- Dark and light theme support - syncs with ChatGPT's own theme
 - Toggle button always visible on the right edge
 - Works on both `chat.openai.com` and `chatgpt.com`
 - Resilient message detection with 6 fallback selectors
