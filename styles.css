@@ -1,0 +1,329 @@
+/* ChatGPT Sidebar Navigator */
+
+/* ── Variables ── */
+
+#cgpt-sidebar {
+  --cgpt-bg: #1a1b1e;
+  --cgpt-bg-item: rgba(255, 255, 255, 0.05);
+  --cgpt-bg-hover: rgba(255, 255, 255, 0.1);
+  --cgpt-bg-active: rgba(255, 255, 255, 0.14);
+  --cgpt-text: #e8e8ea;
+  --cgpt-text-muted: #8e8ea0;
+  --cgpt-text-active: #ffffff;
+  --cgpt-border: rgba(255, 255, 255, 0.08);
+  --cgpt-accent: #4d9eff;
+  --cgpt-accent-glow: rgba(77, 158, 255, 0.18);
+  --cgpt-shadow: rgba(0, 0, 0, 0.55);
+  --cgpt-width: 320px;
+  --cgpt-input-clearance: 80px;
+  --cgpt-radius: 10px;
+  --cgpt-font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#cgpt-sidebar[data-theme="light"] {
+  --cgpt-bg: #f7f7f9;
+  --cgpt-bg-item: rgba(0, 0, 0, 0.04);
+  --cgpt-bg-hover: rgba(0, 0, 0, 0.08);
+  --cgpt-bg-active: rgba(0, 0, 0, 0.12);
+  --cgpt-text: #111114;
+  --cgpt-text-muted: #6b6b80;
+  --cgpt-text-active: #000000;
+  --cgpt-border: rgba(0, 0, 0, 0.08);
+  --cgpt-accent: #1a6ef5;
+  --cgpt-accent-glow: rgba(26, 110, 245, 0.14);
+  --cgpt-shadow: rgba(0, 0, 0, 0.14);
+}
+
+/* ── Sidebar shell ── */
+
+#cgpt-sidebar {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: var(--cgpt-width) !important;
+  height: 100vh !important;
+  background: var(--cgpt-bg);
+  color: var(--cgpt-text);
+  font-family: var(--cgpt-font);
+  z-index: 2147483646 !important;
+  display: flex !important;
+  flex-direction: column;
+  box-shadow: -1px 0 0 var(--cgpt-border), -6px 0 28px var(--cgpt-shadow);
+  transform: translateX(0);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+#cgpt-sidebar.cgpt-sidebar--closed {
+  transform: translateX(100%) !important;
+}
+
+/* ── Header ── */
+
+.cgpt-sidebar-header {
+  padding: 18px 16px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--cgpt-text-muted);
+  border-bottom: 1px solid var(--cgpt-border);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* ── Nav list ── */
+
+.cgpt-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;                  /* consistent spacing between items */
+  padding: 12px 8px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cgpt-border) transparent;
+  /* Fade bottom edge to hint at more content */
+  -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+}
+
+.cgpt-nav-list::-webkit-scrollbar { width: 4px; }
+.cgpt-nav-list::-webkit-scrollbar-track { background: transparent; }
+.cgpt-nav-list::-webkit-scrollbar-thumb {
+  background: var(--cgpt-border);
+  border-radius: 4px;
+}
+
+/* ── Nav items ── */
+
+.cgpt-nav-item {
+  /* Layout — flex for vertical centering */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+
+  /* Uniform card height */
+  min-height: 48px;
+  max-height: 64px;
+  overflow: hidden;
+
+  /* Spacing */
+  padding: 10px 14px;
+  border-radius: var(--cgpt-radius);
+  margin: 0;
+
+  /* Typography */
+  font-family: var(--cgpt-font);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--cgpt-text-muted);
+  text-align: left;
+
+  /* Visual */
+  background: var(--cgpt-bg-item);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Badge — shrinks to its content, vertically centered by parent flex */
+.cgpt-nav-item .msg-index {
+  flex-shrink: 0;
+  margin-right: 8px;
+  /* vertical alignment handled by parent align-items: center */
+}
+
+/* Text span — takes remaining width, clamps to 2 lines */
+.cgpt-nav-item .cgpt-item-text {
+  flex: 1;
+  min-width: 0;              /* allows text to shrink inside flex */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+@keyframes cgpt-item-in {
+  from { opacity: 0; transform: translateX(8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.cgpt-nav-item {
+  animation: cgpt-item-in 0.18s ease both;
+}
+
+.cgpt-nav-item:hover {
+  background: var(--cgpt-bg-hover);
+  color: var(--cgpt-text);
+}
+
+.cgpt-nav-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--cgpt-accent);
+}
+
+/* Active state */
+.cgpt-nav-item--active {
+  background: rgba(100, 150, 255, 0.18);
+  color: var(--cgpt-text-active);
+  font-weight: 600;
+}
+
+.cgpt-nav-item--active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18%;
+  height: 64%;
+  width: 3px;
+  background: #4f8cff;
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 8px rgba(79, 140, 255, 0.4);
+}
+
+#cgpt-sidebar[data-theme="light"] .cgpt-nav-item--active {
+  background: rgba(26, 110, 245, 0.1);
+}
+
+/* Index badge — visible on hover and active */
+.msg-index {
+  display: inline-block;
+  min-width: 18px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--cgpt-text-muted);
+  opacity: 0;
+  margin-right: 8px;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+  vertical-align: middle;
+}
+
+.cgpt-nav-item:hover .msg-index,
+.cgpt-nav-item--active .msg-index {
+  opacity: 0.6;
+}
+
+/* ── Load more button ── */
+
+.cgpt-load-more {
+  display: block;
+  width: calc(100% - 16px);
+  margin: 4px 8px 12px;
+  padding: 10px;
+  background: var(--cgpt-bg-item);
+  border: 1px dashed var(--cgpt-border);
+  border-radius: var(--cgpt-radius);
+  color: var(--cgpt-text-muted);
+  font-family: var(--cgpt-font);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s ease, color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.cgpt-load-more:hover {
+  background: var(--cgpt-bg-hover);
+  color: var(--cgpt-text);
+}
+
+/* ── Toggle button ── */
+
+#cgpt-sidebar-toggle {
+  position: fixed !important;
+  top: 50% !important;
+  right: 12px !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+  z-index: 2147483647 !important;
+  background: var(--cgpt-bg, #1a1b1e);
+  color: var(--cgpt-text-muted, #8e8ea0);
+  border: 1px solid var(--cgpt-border, rgba(255, 255, 255, 0.12));
+  border-radius: 8px;
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 2px 10px var(--cgpt-shadow, rgba(0, 0, 0, 0.5));
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+#cgpt-sidebar-toggle:hover {
+  background: var(--cgpt-bg-hover, rgba(255, 255, 255, 0.1));
+  color: var(--cgpt-text, #e8e8ea);
+}
+
+/* ── Tablet (769px – 1024px) ── */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  #cgpt-sidebar {
+    --cgpt-width: 260px;
+  }
+
+  .cgpt-nav-item {
+    font-size: 13px;
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+}
+
+/* ── Mobile (≤768px) ── */
+
+@media (max-width: 768px) {
+  #cgpt-sidebar {
+    width: 100% !important;
+    height: calc(100vh - var(--cgpt-input-clearance)) !important;
+  }
+
+  .cgpt-nav-list {
+    /* Remove fade on mobile — mask clips tap targets near bottom */
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .cgpt-nav-item {
+    font-size: 15px;
+    padding: 12px 16px;
+    min-height: 52px;
+  }
+
+  .cgpt-nav-item .msg-index {
+    display: none;
+  }
+
+  .cgpt-nav-item:active {
+    background: var(--cgpt-bg-active);
+    color: var(--cgpt-text-active);
+  }
+
+  #cgpt-sidebar-toggle {
+    top: auto !important;
+    bottom: calc(var(--cgpt-input-clearance) + 10px) !important;
+    right: 12px !important;
+    transform: none !important;
+    border-radius: 50% !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 18px;
+  }
+}
