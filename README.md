@@ -20,8 +20,6 @@ When you have a long ChatGPT conversation, finding a specific prompt means scrol
 - Toggle button always visible on the right edge
 - Works on both `chat.openai.com` and `chatgpt.com`
 - Resilient message detection with 6 fallback selectors
-- Handles 300+ messages without crashes
-- "Load more" button for very long chats (300+ prompts)
 - Sidebar state (open/closed) persisted via `chrome.storage`
 
 ---
