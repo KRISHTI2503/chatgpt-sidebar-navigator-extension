@@ -63,11 +63,13 @@ When you have a long ChatGPT conversation, finding a specific prompt means scrol
 
 ## Screenshots
 
-> _Add screenshots here_
-
 | Sidebar Open (Dark) | Sidebar Open (Light) |
-|---|---|
-| _(screenshot)_ | _(screenshot)_ |
+|:-------------------:|:--------------------:|
+| ![Sidebar Dark](screenshots/sidebar-dark.png) | ![Sidebar Light](screenshots/sidebar-light.png) |
+
+| Close Button UI |
+|:---------------:|
+| ![Close Button](screenshots/close-button.png) |
 
 ---
 

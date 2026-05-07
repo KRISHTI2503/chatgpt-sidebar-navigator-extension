@@ -216,6 +216,20 @@
   opacity: 0.6;
 }
 
+/* ── Modal hide ── */
+/* Applied to both sidebar and toggle when a ChatGPT dialog/image viewer is open */
+
+#cgpt-sidebar.navigator-hidden-by-modal {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(100%) !important;
+}
+
+#cgpt-sidebar-toggle.navigator-hidden-by-modal {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* ── Load more button ── */
 
 .cgpt-load-more {

@@ -484,7 +484,52 @@
       }, 800);
     }, 1000);
   }
-  // ── Theme ─────────────────────────────────────────────────────
+  // ── Modal Detection ───────────────────────────────────────────
+  // Watches document.body for ChatGPT dialogs/image viewers appearing.
+  // Uses a single observer on body with attributeFilter to avoid
+  // triggering on every chat DOM mutation (no subtree needed here).
+
+  // Selectors that indicate a modal/overlay is open
+  const MODAL_SELECTORS = [
+    '[role="dialog"]',
+    '[role="alertdialog"]',
+    '.modal',
+    '[data-radix-dialog-content]',   // Radix UI dialogs used by ChatGPT
+    '[data-radix-popper-content-wrapper]',
+    '[class*="lightbox"]',
+    '[class*="image-viewer"]',
+    '[class*="fullscreen"]',
+  ];
+
+  function isModalOpen() {
+    return MODAL_SELECTORS.some(sel => {
+      try { return !!document.querySelector(sel); }
+      catch (_) { return false; }
+    });
+  }
+
+  function handleModalVisibility() {
+    if (!$sidebar || !$toggle) return;
+    if (isModalOpen()) {
+      $sidebar.classList.add("navigator-hidden-by-modal");
+      $toggle.classList.add("navigator-hidden-by-modal");
+    } else {
+      $sidebar.classList.remove("navigator-hidden-by-modal");
+      $toggle.classList.remove("navigator-hidden-by-modal");
+    }
+  }
+
+  // Debounced so rapid child additions during modal animation don't
+  // fire handleModalVisibility dozens of times per second.
+  const handleModalVisibilityDebounced = debounce(handleModalVisibility, 120);
+
+  function startModalObserver() {
+    // Observe only direct children of body — modals are always appended
+    // at the top level by React portals, so subtree:false is sufficient
+    // and avoids watching the entire chat DOM.
+    const modalObs = new MutationObserver(handleModalVisibilityDebounced);
+    modalObs.observe(document.body, { childList: true });
+  }
 
   function applyTheme() {
     if (!$sidebar) return;
@@ -571,6 +616,7 @@
       startIntersectionObserver();
       extractQuestions();
       startObserver();
+      startModalObserver();
       watchNavigation();
     } catch (e) {
       console.error("Extension Error (init):", e);
